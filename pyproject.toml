@@ -31,6 +31,7 @@ dependencies=[
     'peds>=1.2.0',
     'phenopackets>=2',
     'protobuf==3.20.2',
+    'pyarrow>=20.0.0',
     'pydantic>=2.5.2',
     'python-dateutil>=2',
     'semsimian',
@@ -76,6 +77,8 @@ ParseManeIntoJson = 'talos.annotation_scripts.ParseManeIntoJson:cli_main'
 ReformatAnnotatedVcfIntoHailTable = 'talos.annotation_scripts.ReformatAnnotatedVcfIntoHailTable:cli_main'
 # Combines the annotations and the VCF into a MatrixTable
 TransferAnnotationsToMatrixTable = 'talos.annotation_scripts.TransferAnnotationsToMatrixTable:cli_main'
+# Converts a Hail MatrixTable to a Parquet file.
+ConvertMatrixTableToParquet = 'talos.annotation_scripts.ConvertMatrixTableToParquet:cli_main'
 
 # ----------------------------------------------------------------------------------------
 # these scripts are specific to internal CPG functions
