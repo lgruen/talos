@@ -16,6 +16,7 @@ nextflow.enable.dsl=2
 
 include { AnnotateCsqWithBcftools } from './modules/annotation/AnnotateCsqWithBcftools/main'
 include { AnnotateGnomadAfWithEchtvar } from './modules/annotation/AnnotateGnomadAfWithEchtvar/main'
+include { ConvertMatrixTableToParquet } from './modules/annotation/ConvertMatrixTableToParquet/main'
 include { CreateRoiFromGff3 } from './modules/annotation/CreateRoiFromGff3/main'
 include { FilterVcfToBedWithBcftools } from './modules/annotation/FilterVcfToBedWithBcftools/main'
 include { MakeSitesOnlyVcfWithBcftools } from './modules/annotation/MakeSitesOnlyVcfWithBcftools/main'
@@ -145,5 +146,10 @@ workflow {
     TransferAnnotationsToMatrixTable(
         ReformatAnnotatedVcfIntoHailTable.out,
         ch_merged_tuple,
+    )
+    
+    // convert the MatrixTable to Parquet format with lz4 compression
+    ConvertMatrixTableToParquet(
+        TransferAnnotationsToMatrixTable.out
     )
 }
