@@ -25,6 +25,7 @@ include { ParseAlphaMissenseIntoHt } from './modules/annotation/ParseAlphaMissen
 include { ParseManeIntoJson } from './modules/annotation/ParseManeIntoJson/main'
 include { ReformatAnnotatedVcfIntoHailTable } from './modules/annotation/ReformatAnnotatedVcfIntoHailTable/main'
 include { TransferAnnotationsToMatrixTable } from './modules/annotation/TransferAnnotationsToMatrixTable/main'
+include { CreateFeatureTable } from './modules/annotation/CreateFeatureTable/main'
 
 workflow {
 
@@ -151,5 +152,13 @@ workflow {
     // convert the MatrixTable to Parquet format
     ConvertMatrixTableToParquet(
         TransferAnnotationsToMatrixTable.out
+    )
+
+    // create a feature table for ML models
+    // TODO(leo): ConvertMatrixTableToParquet.out contains the whole cohort,
+    // but feature generation expects a per-family input table. I.e. there's
+    // a per-family split missing upstream.
+    CreateFeatureTable(
+        ConvertMatrixTableToParquet.out
     )
 }
