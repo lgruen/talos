@@ -25,15 +25,15 @@ returned variants, and around 40% of variants flagged for special attention deem
 Included here are two reference workflow implementation using NextFlow:
 
 - [Annotation](nextflow/annotation.nf): Starting from single or multisample VCFs, this workflow annotates and reformats
-    the variant data into a Talos-ready starting point.
+  the variant data into a Talos-ready starting point.
 - [Talos](nextflow/talos.nf): A full Talos analysis, starting from the annotated data in MatrixTable form, and running
-    through to report generation.
+  through to report generation.
 
 These workflows can be executed in full using a Docker image built on the [Dockerfile](Dockerfile) at the root of this
 repository. This Docker image contains Talos and all its dependencies, plus BCFtools (used for merging and consequence
 annotation) and [Echtvar](https://github.com/brentp/echtvar) (used to rapidly apply population frequencies).
 
-> **_NOTE:_**  Note the tag of the dockerfile in this command is kept in sync with the package version and config
+> **_NOTE:_** Note the tag of the dockerfile in this command is kept in sync with the package version and config
 > setting. If you apply another tag you'll have to make the corresponding change in the nextflow config files.
 
 ```commandline
@@ -52,7 +52,7 @@ economical to store in this repository. For the annotation workflow:
 1. A reference genome matching your input data, in FASTA format.
 2. An echtvar reference file from https://zenodo.org/records/15110230. Rename this to match the `params.gnomad_zip` entry in the [annotation.config](nextflow/annotation.config) file. This file does not need to be unzipped!
 3. An Ensembl GFF3 file, e.g. `Homo_sapiens.GRCh38.113.gff3.gz` from the [Ensembl FTP site](https://ftp.ensembl.org/pub/release-113/gff3/homo_sapiens)
-4. A MANE Summary text file, e.g. `MANE.GRCh38.v1.4.summary.txt.gz` from the  [RefSeq MANE FTP site](https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.4)
+4. A MANE Summary text file, e.g. `MANE.GRCh38.v1.4.summary.txt.gz` from the [RefSeq MANE FTP site](https://ftp.ncbi.nlm.nih.gov/refseq/MANE/MANE_human/release_1.4)
 
 For the Talos workflow:
 
@@ -88,25 +88,24 @@ file as input, instead of merging individual VCFs. This will be beneficial if yo
 Talos analysis consists of a few main phases:
 
 1. [optional] Using HPO terms in metadata to identify phenotype-matched gene panels of interest
-    * If no phenotype terms were provided, analysis will just default to the base (Mendeliome) gene panel
+   - If no phenotype terms were provided, analysis will just default to the base (Mendeliome) gene panel
 2. Querying PanelApp to find the genes of interest for this analysis run
-   * Using any phenotype-matched panels overlaid on a base Mendelian gene panel
+   - Using any phenotype-matched panels overlaid on a base Mendelian gene panel
 3. Variant Filtering & Categorisation
-   * Talos applies several filtering criteria to remove common or benign variants, then applies a number of filtering
-        categories to select variants which pass a decision tree of criteria.
-   * If a variant passes all criteria of a category, it is labelled with that category.
-   * If a variant passes multiple categories, it is labelled with all applicable categories.
-   * Once all categories have been applied, any un-categorised variants are removed.
+   - Talos applies several filtering criteria to remove common or benign variants, then applies a number of filtering
+     categories to select variants which pass a decision tree of criteria.
+   - If a variant passes all criteria of a category, it is labelled with that category.
+   - If a variant passes multiple categories, it is labelled with all applicable categories.
+   - Once all categories have been applied, any un-categorised variants are removed.
 4. Mode of Inheritance (MOI) Checking
-   * For each remaining variant, we check if the variant's presence in members of the family is consistent with its MOI
-     * This includes both individual variants and compound-heterozygotes between multiple different variants.
-   * If the variant is consistent with the MOI, the variant is retained for a final report.
+   - For each remaining variant, we check if the variant's presence in members of the family is consistent with its MOI
+     - This includes both individual variants and compound-heterozygotes between multiple different variants.
+   - If the variant is consistent with the MOI, the variant is retained for a final report.
 5. [optional] HPO Term Matching
-   * If phenotypes are provided, we flag any variants which seem well matched to their families to prioritise analysis
+   - If phenotypes are provided, we flag any variants which seem well matched to their families to prioritise analysis
 6. Report Generation
-   * An HTML report is generated for the cohort as a whole, and separately for each family, detailing the variants which
-       passed all filtering criteria
-
+   - An HTML report is generated for the cohort as a whole, and separately for each family, detailing the variants which
+     passed all filtering criteria
 
 ## Input Data
 
@@ -114,9 +113,9 @@ To run Talos you will need:
 
 1. Variant data, annotated with VEP. The input can be provided as a Hail MatrixTable or as a multisample VCF
 
-    * Talos uses Hail Query, a PySpark-based query engine, to perform highly parallelised analysis. This requires variants to be stored using the Hail MatrixTable format. If your current workflow uses hail, a MatrixTable can be provided directly as an input.
-    * Alternatively a VEP-annotated multi-sample VCF can be provided as input. An additional pre-processing step will convert the VCF to a MatrixTable at run time.
-    * Talos is intended to run once per-cohort, not once per cohort. Variant calls from all families/individuals in a cohort should be merged into a single multi-sample file prior to processing with Talos.
+   - Talos uses Hail Query, a PySpark-based query engine, to perform highly parallelised analysis. This requires variants to be stored using the Hail MatrixTable format. If your current workflow uses hail, a MatrixTable can be provided directly as an input.
+   - Alternatively a VEP-annotated multi-sample VCF can be provided as input. An additional pre-processing step will convert the VCF to a MatrixTable at run time.
+   - Talos is intended to run once per-cohort, not once per cohort. Variant calls from all families/individuals in a cohort should be merged into a single multi-sample file prior to processing with Talos.
 
 2. ClinVar data as generated by ClinvArbitration, both the `clinvar_decisions` and `clinvar_pm5` Hail Tables. This is
    available from the [ClinvArbitration Release Page](https://github.com/populationgenomics/ClinvArbitration/releases), or can be generated using the code and process described in the [ClinvArbitration repository](https://github.com/populationgenomics/ClinvArbitration).
@@ -175,3 +174,45 @@ This preparatory script expects that the Exomiser Variant analysis TSVs have the
 The heart of Talos' utility is in re-analysis, by bootstrapping from previous analyses. Where possible each run consults the history from the previous run, determining whether each variant has been seen before, and if so, whether evidence has evolved. Each run adds the incremental content, and re-saves the history.
 
 The final report contains a `first_seen` date for each variant, along with an `evidence_last_updated` date which indicates the most recent date that the evidence changed (new category labels were applied). By filtering on either of these dates, analysts can view only the incremental variants new in each round, or variants where the evidence has changed.
+
+## Machine Learning Integration
+
+Talos now includes a machine learning framework for variant prioritization, which supplements the rule-based filtering approach. The ML architecture consists of three main components:
+
+1. **Training Module** (`talos/training/`): Contains code for training machine learning models on labeled variant data. Currently implements a CatBoost-based classification model that learns from manually curated variants.
+
+2. **Shared Module** (`talos/shared/`): Contains utilities and data structures shared between training and inference, including feature definition, schema validation, and data loading functionality.
+
+3. **Inference Module** (`talos/inference/`): Contains code for applying trained models to new variant data, seamlessly integrating with the existing Talos pipeline.
+
+### Feature Extraction
+
+The annotation workflow now includes an additional step `ExtractFeatures` that extracts and formats features for the ML model from the annotated variants. This creates a standardized feature representation in Parquet format that can be used for both training and inference.
+
+### Model Training
+
+To train a model using the training module:
+
+1. Set the `MLFLOW_TRACKING_URI` environment variable to point to a deployed MLflow instance:
+
+   ```bash
+   export MLFLOW_TRACKING_URI=http://your-mlflow-server:5000
+   ```
+
+2. Run the training script with labeled data:
+
+   ```bash
+   python -m talos.training.train --features-dir /path/to/features --labels-dir /path/to/labels --output-dir /path/to/models --mlflow-experiment-name your_experiment_name
+   ```
+
+Training metrics and model artifacts will be logged to the MLflow instance for tracking and versioning.
+
+### Inference
+
+The inference module can be used to apply trained models to new variants:
+
+```bash
+python -m talos.inference.predict --model-path /path/to/model --feature-path /path/to/features --output-path /path/to/predictions
+```
+
+This approach represents a step toward the vision outlined in the "Talos-AI" proposal, evolving Talos from a purely rule-based system toward a hybrid approach that leverages both expert knowledge and machine learning capabilities. The ML integration aims to improve variant prioritization by learning from previously solved cases while maintaining the transparency and explainability needed for clinical applications.

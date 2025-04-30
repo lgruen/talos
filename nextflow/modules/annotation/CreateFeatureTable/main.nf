@@ -1,4 +1,4 @@
-process CreateFeatureTable {
+process ExtractFeatures {
     container params.container
     publishDir params.cohort_output_dir, mode: 'copy'
 
@@ -12,7 +12,7 @@ process CreateFeatureTable {
     """
         set -ex
         
-        CreateFeatureTable \
+        ExtractFeatures \
             --input \${params.family_parquet_table} \
             --output ${params.cohort}_features.parquet
         """
