@@ -152,4 +152,12 @@ workflow {
     ConvertMatrixTableToParquet(
         TransferAnnotationsToMatrixTable.out
     )
+
+    // create a feature table for ML models
+    // TODO(leo): ConvertMatrixTableToParquet.out contains the whole cohort,
+    // but feature generation expects a per-family input table. I.e. there's
+    // a per-family split missing upstream.
+    CreateFeatureTable(
+        ConvertMatrixTableToParquet.out
+    )
 }

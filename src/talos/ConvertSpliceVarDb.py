@@ -15,7 +15,8 @@ from argparse import ArgumentParser
 
 import hail as hl
 
-from talos.utils import get_random_string, hail_table_from_tsv
+from talos.utils import get_random_string
+from talos.hail_utils import hail_table_from_tsv
 
 
 """

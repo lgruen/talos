@@ -30,6 +30,7 @@ dependencies=[
     'obonet>=1',
     'peds>=1.2.0',
     'phenopackets>=2',
+    'polars>=1.28.1',
     'protobuf==3.20.2',
     'pyarrow>=20.0.0',
     'pydantic>=2.5.2',
@@ -79,6 +80,8 @@ ReformatAnnotatedVcfIntoHailTable = 'talos.annotation_scripts.ReformatAnnotatedV
 TransferAnnotationsToMatrixTable = 'talos.annotation_scripts.TransferAnnotationsToMatrixTable:cli_main'
 # Converts a Hail MatrixTable to a Parquet file.
 ConvertMatrixTableToParquet = 'talos.annotation_scripts.ConvertMatrixTableToParquet:cli_main'
+# Creates a per-family feature table in Parquet format.
+CreateFeatureTable = 'talos.annotation_scripts.CreateFeatureTable:cli_main'
 
 # ----------------------------------------------------------------------------------------
 # these scripts are specific to internal CPG functions
